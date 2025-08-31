@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Warrior's Validator</title>
+  <style>
+    :root {
+      --background-color: #121826;
+      --primary-text-color: #F0F2F5;
+      --secondary-text-color: #8A94A6;
+      --accent-color: #4A80F0;
+      --success-color: #34D399;
+      --error-color: #F87171;
+      --border-color: #333D52;
+      --card-background: #1C2436;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      background-color: var(--background-color);
+      color: var(--primary-text-color);
+      font-family: var(--font-family);
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      flex-grow: 1;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    header h1 {
+      color: var(--primary-text-color);
+      font-size: 2.75rem;
+      letter-spacing: -1px;
+      font-weight: 700;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      color: var(--secondary-text-color);
+      margin-top: 8px;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .card {
+      background-color: var(--card-background);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .card h2 {
+      color: var(--primary-text-color);
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #drop-zone {
+      border: 2px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    #drop-zone.drag-over {
+      border-style: solid;
+      border-color: var(--accent-color);
+      background-color: rgba(74, 128, 240, 0.1);
+    }
+
+    #file-input {
+      display: none;
+    }
+
+    #file-list {
+      list-style: none;
+      margin-top: 24px;
+      max-height: 160px;
+      overflow-y: auto;
+      font-size: 0.95rem;
+    }
+
+    #file-list li {
+      padding: 8px 4px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    #file-list li:last-child {
+      border-bottom: none;
+    }
+
+    .file-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .file-size {
+      color: var(--secondary-text-color);
+      font-size: 0.9rem;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(to right, #4A80F0, #3A6BCC);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      margin-top: 24px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:disabled {
+      background: #333D52;
+      cursor: not-allowed;
+      opacity: 0.6;
+      box-shadow: none;
+    }
+
+    .btn .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+    }
+
+    .btn.loading .spinner {
+      display: block;
+    }
+
+    .btn.loading .btn-text {
+      display: none;
+    }
+
+    #results-container {
+      display: none;
+    }
+
+    #results-list {
+      list-style: none;
+    }
+
+    .result-item {
+      background-color: var(--card-background);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+
+    .result-item.pass {
+      background-color: rgba(52, 211, 153, 0.05);
+      border-left: 4px solid var(--success-color);
+    }
+
+    .result-item.fail {
+      background-color: rgba(248, 113, 113, 0.05);
+      border-left: 4px solid var(--error-color);
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .result-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .result-title {
+      font-weight: 500;
+      font-size: 1.1rem;
+      flex-grow: 1;
+    }
+
+    .result-status {
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .result-item.pass .result-status {
+      color: var(--success-color);
+    }
+
+    .result-item.fail .result-status {
+      color: var(--error-color);
+    }
+
+    .result-details {
+      font-size: 0.95rem;
+      color: var(--secondary-text-color);
+      margin-top: 8px;
+      padding-left: 40px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 60px 20px 20px;
+      color: var(--secondary-text-color);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="container">
+    <h1>Web Warrior's Validator</h1>
+    <p>A Monolith Master tool for the "Battle Against Bloat" Hackathon.</p>
+  </header>
+
+  <main class="container">
+    <section id="uploader-card" class="card">
+      <h2>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 8 12 3 7 8" />
+          <line x1="12" x2="12" y1="3" y2="15" />
+        </svg>
+        1. Upload Project
+      </h2>
+      <div id="drop-zone">
+        <p>Drag & drop project file(s) here, or click to browse</p>
+        <input type="file" id="file-input" multiple webkitdirectory directory>
+      </div>
+      <ul id="file-list"></ul>
+    </section>
+
+    <section id="validation-card" class="card">
+      <h2>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" x2="8" y1="13" y2="13" />
+          <line x1="16" x2="8" y1="17" y2="17" />
+          <polyline points="10 9 9 9 8 9" />
+        </svg>
+        2. Run Validation
+      </h2>
+      <button id="validate-btn" class="btn" disabled>
+        <span class="btn-text">Validate Project</span>
+        <div class="spinner"></div>
+      </button>
+    </section>
+
+    <section id="results-container" class="card">
+      <h2>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+        3. Validation Report
+      </h2>
+      <ul id="results-list"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>Crafted with 100% Vanilla JS.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // --- DOM Elements ---
+      var dropZone = document.getElementById('drop-zone');
+      var fileInput = document.getElementById('file-input');
+      var fileList = document.getElementById('file-list');
+      var validateBtn = document.getElementById('validate-btn');
+      var resultsContainer = document.getElementById('results-container');
+      var resultsList = document.getElementById('results-list');
+
+      var filesStore = [];
+
+      // --- File Handling ---
+      dropZone.addEventListener('click', function () { fileInput.click(); });
+      dropZone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+      });
+      dropZone.addEventListener('dragleave', function () { dropZone.classList.remove('drag-over'); });
+      dropZone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        handleFiles(e.dataTransfer.files);
+      });
+      fileInput.addEventListener('change', function (e) { handleFiles(e.target.files); });
+
+      function handleFiles(files) {
+        filesStore = Array.from(files).map(function (file) {
+          return { file: file, content: '' };
+        });
+
+        if (filesStore.length === 0) {
+          validateBtn.disabled = true;
+          return;
+        }
+
+        updateFileList();
+        validateBtn.disabled = false;
+
+        var filesRead = 0;
+        filesStore.forEach(function (fileWrapper) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            fileWrapper.content = e.target.result;
+            filesRead++;
+          };
+          reader.onerror = function () {
+            fileWrapper.content = 'Error reading file.';
+            filesRead++;
+          };
+          reader.readAsText(fileWrapper.file);
+        });
+      }
+
+      function updateFileList() {
+        fileList.innerHTML = '';
+        filesStore.forEach(function (fileWrapper) {
+          var li = document.createElement('li');
+          li.innerHTML = '<div class="file-info"><span>' + (fileWrapper.file.webkitRelativePath || fileWrapper.file.name) + '</span><span class="file-size">' + (fileWrapper.file.size / 1024).toFixed(2) + ' KB</span></div>';
+          fileList.appendChild(li);
+        });
+      }
+
+      // --- Validation Logic ---
+      validateBtn.addEventListener('click', function () {
+        validateBtn.classList.add('loading');
+        resultsContainer.style.display = 'none';
+        resultsList.innerHTML = '';
+        validateBtn.disabled = true;
+
+        setTimeout(function () {
+          var results = runAllValidators();
+          renderResults(results);
+          validateBtn.classList.remove('loading');
+          resultsContainer.style.display = 'block';
+          validateBtn.disabled = false;
+        }, 1500);
+      });
+
+      function runAllValidators() {
+        return [
+          checkByteAssassin(filesStore),
+          checkMonolithMaster(filesStore),
+          checkNoScriptSorcerer(filesStore),
+          checkSingleRequestSamurai(filesStore),
+          checkLegacyBrowser(filesStore),
+          checkAccessibility(filesStore),
+          checkOfflineSurvivalist(filesStore),
+          checkKeyboardSensei(filesStore),
+          checkTextOnlyStoryteller(filesStore),
+        ];
+      }
+
+      // --- Individual Validator Functions ---
+      function checkByteAssassin(files) {
+        var totalSize = files.reduce(function (acc, f) { return acc + f.file.size; }, 0);
+        var pass = totalSize <= 1024 && totalSize > 0;
+        return {
+          title: 'Byte Assassin',
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 22 10l-7.5-7.5L9 8l4 4-4 4 5.5 5.5Z"/><path d="m2 2 20 20"/><path d="M12 12 8 8"/></svg>',
+          pass: pass,
+          message: 'Total project size is ' + totalSize + ' bytes. (Max: 1024 bytes)'
+        };
+      }
+      function checkMonolithMaster(files) {
+        var htmlFiles = files.filter(function (f) { return f.file.name.endsWith('.html'); });
+        var pass = files.length === 1 && htmlFiles.length === 1;
+        return {
+          title: 'Monolith Master',
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="9" x2="9" y1="21" y2="9"/></svg>',
+          pass: pass,
+          message: 'Project contains ' + files.length + ' file(s). A true monolith is a single HTML file.'
+        };
+      }
+
+      function checkNoScriptSorcerer(files) {
+        var hasScriptTag = files.some(function (f) { return f.file.name.endsWith('.html') && /<script/i.test(f.content); });
+        return {
+          title: 'No-Script Sorcerer',
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+          pass: !hasScriptTag,
+          message: hasScriptTag ? 'A <script> tag was found in an HTML file.' : 'No <script> tags found.'
+        };
+      }
+
+      function checkSingleRequestSamurai(files) {
+        var externalRegex = /<(?:link|script|img|source)[^>]+(href|src)="https?:\/\//i;
+        var hasExternalRequest = files.some(function (f) { return f.file.name.endsWith('.html') && externalRegex.test(f.content); });
+        return {
+          title: 'Single-Request Samurai',
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 22v-6.57"/><path d="M12 22a2.5 2.5 0 0 1-5 0v-6.57a2.5 2.5 0 1 1 5 0V22Z"/><path d="M14 22v-6.57"/><path d="M15 22a2.5 2.5 0 0 0-5 0v-6.57a2.5 2.5 0 1 0 5 0V22Z"/><path d="m14 15.43-4.43-2.82a.5.5 0 0 0-.57.6V22"/><path d="M10 15.43 14.43 12.6a.5.5 0 0 1 .57.6V22"/><path d="M19 2a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3A3 3 0 0 1 16 5v0a3 3 0 0 1 3-3Z"/><path d="M7 8a3 3 0 0 0-3-3v0a3 3 0 0 0 3-3A3 3 0 0 0 7 5v0a3 3 0 0 0-3 3Z"/></svg>',
+          pass: !hasExternalRequest,
+          message: hasExternalRequest ? 'Found external resource links (http/https).' : 'No external resource links found.'
+        };
+      }
+
+      function checkLegacyBrowser(files) {
+        var modernJsRegex = /\b(const|let|`|=>|Promise|async|await)\b/i;
+        var hasModernJs = files.some(function (f) { return (f.file.name.endsWith('.js') || f.file.name.endsWith('.html')) && modernJsRegex.test(f.content); });
+        return {
+          title: 'Legacy Browser Archaeologist',
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>',
+          pass: !hasModernJs,
+          message: hasModernJs ? 'Found modern JS syntax (const, let, =>, etc.)' : 'Code appears to be IE11-friendly.'
+        };
+      }
+
+      function checkAccessibility(files) {
+        var issues = [];
+        files.forEach(function (f) {
+          if (f.file.name.endsWith('.html')) {
+            if (!/<html[^>]+lang=/i.test(f.content)) issues.push('Missing `lang` attribute on <html> tag.');
+            if (/<img((?!alt=).)*?>/i.test(f.content)) issues.push('Found <img> tag missing an `alt` attribute.');
+          }
+        });
+        return {
+          title: 'Universal Access Guardian',
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>',
+          pass: issues.length === 0,
+          message: issues.length > 0 ? issues.join(' ') : 'Basic accessibility checks passed.'
+        };
+      }
+
+      function checkOfflineSurvivalist(files) {
+        var hasSW = files.some(function (f) { return f.content.includes('serviceWorker') && f.content.includes('register'); });
+        return {
+          title: 'Offline Survivalist',
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+          pass: hasSW,
+          message: hasSW ? 'Service Worker registration script found.' : 'No Service Worker registration detected.'
+        };
+      }
+
+      function checkKeyboardSensei(files) {
+        var hasNegativeTabindex = files.some(function (f) { return f.content.includes('tabindex="-1"'); });
+        return {
+          title: 'Keyboard Sensei',
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="6" x2="6" y1="11" y2="11"/><line x1="10" x2="10" y1="11" y2="11"/><line x1="14" x2="14" y1="11" y2="11"/><line x1="18" x2="18" y1="11" y2="11"/><line x1="8" x2="8" y1="15" y2="15"/><line x1="12" x2="12" y1="15" y2="15"/><line x1="16" x2="16" y1="15" y2="15"/><path d="M8 19v2"/><path d="M16 19v2"/></svg>',
+          pass: !hasNegativeTabindex,
+          message: hasNegativeTabindex ? 'Found `tabindex="-1"`, which can harm navigation.' : 'No negative tabindex found.'
+        };
+      }
+
+      function checkTextOnlyStoryteller(files) {
+        var hasMediaTags = files.some(function (f) { return /<(img|video|canvas|svg)/i.test(f.content); });
+        return {
+          title: 'Text-Only Storyteller',
+          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 6.1H3"/><path d="M21 12.1H3"/><path d="M15.1 18.1H3"/></svg>',
+          pass: !hasMediaTags,
+          message: hasMediaTags ? 'Found media tags (img, video, etc.).' : 'No media tags found.'
+        };
+      }
+
+      // --- Results Rendering ---
+      function renderResults(results) {
+        results.forEach(function (result) {
+          var li = document.createElement('li');
+          li.className = 'result-item ' + (result.pass ? 'pass' : 'fail');
+          li.innerHTML = '<div><div class="result-header"><div class="result-icon">' + result.icon + '</div><div class="result-title">' + result.title + '</div><div class="result-status">' + (result.pass ? 'PASS' : 'FAIL') + '</div></div><p class="result-details">' + result.message + '</p></div>';
+          resultsList.appendChild(li);
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>
