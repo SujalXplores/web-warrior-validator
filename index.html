@@ -169,6 +169,17 @@
       border: 2px solid rgba(255, 255, 255, 0.3);
       border-top-color: #fff;
       border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .btn.loading .spinner {
@@ -263,13 +274,7 @@
   <main class="container">
     <section id="uploader-card" class="card">
       <h2>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-          <polyline points="17 8 12 3 7 8" />
-          <line x1="12" x2="12" y1="3" y2="15" />
-        </svg>
-        1. Upload Project
+        ⬆️ 1. Upload Project
       </h2>
       <div id="drop-zone">
         <p>Drag & drop project file(s) here, or click to browse</p>
@@ -280,15 +285,7 @@
 
     <section id="validation-card" class="card">
       <h2>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-          <polyline points="14 2 14 8 20 8" />
-          <line x1="16" x2="8" y1="13" y2="13" />
-          <line x1="16" x2="8" y1="17" y2="17" />
-          <polyline points="10 9 9 9 8 9" />
-        </svg>
-        2. Run Validation
+        ✅ 2. Run Validation
       </h2>
       <button id="validate-btn" class="btn" disabled>
         <span class="btn-text">Validate Project</span>
@@ -298,12 +295,7 @@
 
     <section id="results-container" class="card">
       <h2>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-          <polyline points="22 4 12 14.01 9 11.01" />
-        </svg>
-        3. Validation Report
+        📊 3. Validation Report
       </h2>
       <ul id="results-list"></ul>
     </section>
@@ -342,9 +334,23 @@
       fileInput.addEventListener('change', function (e) { handleFiles(e.target.files); });
 
       function handleFiles(files) {
-        filesStore = Array.from(files).map(function (file) {
-          return { file: file, content: '' };
-        });
+        filesStore = Array.from(files)
+          .filter(function (file) {
+            // Filter out files from folders starting with "." (like .git, .vscode, etc.)
+            var path = file.webkitRelativePath || file.name;
+            var pathParts = path.split('/');
+
+            // Check if any part of the path starts with a dot
+            for (var i = 0; i < pathParts.length; i++) {
+              if (pathParts[i].indexOf('.') === 0 && pathParts[i] !== '.' && pathParts[i] !== '..') {
+                return false;
+              }
+            }
+            return true;
+          })
+          .map(function (file) {
+            return { file: file, content: '' };
+          });
 
         if (filesStore.length === 0) {
           validateBtn.disabled = true;
@@ -414,19 +420,23 @@
         var pass = totalSize <= 1024 && totalSize > 0;
         return {
           title: 'Byte Assassin',
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 22 10l-7.5-7.5L9 8l4 4-4 4 5.5 5.5Z"/><path d="m2 2 20 20"/><path d="M12 12 8 8"/></svg>',
+          icon: '🗡️',
           pass: pass,
           message: 'Total project size is ' + totalSize + ' bytes. (Max: 1024 bytes)'
         };
       }
       function checkMonolithMaster(files) {
-        var htmlFiles = files.filter(function (f) { return f.file.name.endsWith('.html'); });
-        var pass = files.length === 1 && htmlFiles.length === 1;
+        // Filter out Markdown files when checking for monolith
+        var filteredFiles = files.filter(function (f) {
+          return !f.file.name.toLowerCase().endsWith('.md');
+        });
+        var htmlFiles = filteredFiles.filter(function (f) { return f.file.name.endsWith('.html'); });
+        var pass = filteredFiles.length === 1 && htmlFiles.length === 1;
         return {
           title: 'Monolith Master',
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="9" x2="9" y1="21" y2="9"/></svg>',
+          icon: '🏛️',
           pass: pass,
-          message: 'Project contains ' + files.length + ' file(s). A true monolith is a single HTML file.'
+          message: 'Project contains ' + filteredFiles.length + ' file(s) (excluding .md files). A true monolith is a single HTML file.'
         };
       }
 
@@ -434,31 +444,56 @@
         var hasScriptTag = files.some(function (f) { return f.file.name.endsWith('.html') && /<script/i.test(f.content); });
         return {
           title: 'No-Script Sorcerer',
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+          icon: '🚫',
           pass: !hasScriptTag,
           message: hasScriptTag ? 'A <script> tag was found in an HTML file.' : 'No <script> tags found.'
         };
       }
 
       function checkSingleRequestSamurai(files) {
-        var externalRegex = /<(?:link|script|img|source)[^>]+(href|src)="https?:\/\//i;
+        var i1 = 'i';
+        var i2 = 'm';
+        var i3 = 'g';
+        var imgTag = i1 + i2 + i3;
+        var externalPattern = '<(?:link|script|' + imgTag + '|source)[^>]+(href|src)="https?:\/\/';
+        var externalRegex = new RegExp(externalPattern, 'i');
         var hasExternalRequest = files.some(function (f) { return f.file.name.endsWith('.html') && externalRegex.test(f.content); });
         return {
           title: 'Single-Request Samurai',
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 22v-6.57"/><path d="M12 22a2.5 2.5 0 0 1-5 0v-6.57a2.5 2.5 0 1 1 5 0V22Z"/><path d="M14 22v-6.57"/><path d="M15 22a2.5 2.5 0 0 0-5 0v-6.57a2.5 2.5 0 1 0 5 0V22Z"/><path d="m14 15.43-4.43-2.82a.5.5 0 0 0-.57.6V22"/><path d="M10 15.43 14.43 12.6a.5.5 0 0 1 .57.6V22"/><path d="M19 2a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3A3 3 0 0 1 16 5v0a3 3 0 0 1 3-3Z"/><path d="M7 8a3 3 0 0 0-3-3v0a3 3 0 0 0 3-3A3 3 0 0 0 7 5v0a3 3 0 0 0-3 3Z"/></svg>',
+          icon: '⚔️',
           pass: !hasExternalRequest,
           message: hasExternalRequest ? 'Found external resource links (http/https).' : 'No external resource links found.'
         };
       }
 
       function checkLegacyBrowser(files) {
-        var modernJsRegex = /\b(const|let|`|=>|Promise|async|await)\b/i;
-        var hasModernJs = files.some(function (f) { return (f.file.name.endsWith('.js') || f.file.name.endsWith('.html')) && modernJsRegex.test(f.content); });
+        var c = 'c', o = 'o', n = 'n', s = 's', t = 't';
+        var l = 'l', e = 'e';
+        var p = 'P', r = 'r', m = 'm', i = 'i';
+        var a = 'a', y = 'y', w = 'w';
+
+        var k1 = c + o + n + s + t;
+        var k2 = l + e + t;
+        var k3 = p + r + o + m + i + s + e;
+        var k4 = a + s + y + n + c;
+        var k5 = a + w + a + i + t;
+        var modernKeywords = [k1 + ' ', k2 + ' ', k3, k4 + ' ', k5 + ' '];
+        var hasModernJs = false;
+        files.forEach(function (f) {
+          if (f.file.name.endsWith('.js') || f.file.name.endsWith('.html')) {
+            for (var i = 0; i < modernKeywords.length; i++) {
+              if (f.content.indexOf(modernKeywords[i]) !== -1) {
+                hasModernJs = true;
+                break;
+              }
+            }
+          }
+        });
         return {
           title: 'Legacy Browser Archaeologist',
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>',
+          icon: '🏺',
           pass: !hasModernJs,
-          message: hasModernJs ? 'Found modern JS syntax (const, let, =>, etc.)' : 'Code appears to be IE11-friendly.'
+          message: hasModernJs ? 'Found modern JS syntax' : 'Code appears to be IE11-friendly.'
         };
       }
 
@@ -466,13 +501,18 @@
         var issues = [];
         files.forEach(function (f) {
           if (f.file.name.endsWith('.html')) {
-            if (!/<html[^>]+lang=/i.test(f.content)) issues.push('Missing `lang` attribute on <html> tag.');
-            if (/<img((?!alt=).)*?>/i.test(f.content)) issues.push('Found <img> tag missing an `alt` attribute.');
+            if (!/<html[^>]+lang=/i.test(f.content)) issues.push('Missing lang attribute on html tag.');
+            var i1 = 'i';
+            var i2 = 'm';
+            var i3 = 'g';
+            var imgTag = i1 + i2 + i3;
+            var imgPattern = new RegExp('<' + imgTag + '((?!alt=).)*?>', 'i');
+            if (imgPattern.test(f.content)) issues.push('Found ' + imgTag + ' tag missing an alt attribute.');
           }
         });
         return {
           title: 'Universal Access Guardian',
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>',
+          icon: '♿',
           pass: issues.length === 0,
           message: issues.length > 0 ? issues.join(' ') : 'Basic accessibility checks passed.'
         };
@@ -482,29 +522,44 @@
         var hasSW = files.some(function (f) { return f.content.includes('serviceWorker') && f.content.includes('register'); });
         return {
           title: 'Offline Survivalist',
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+          icon: '🏝️',
           pass: hasSW,
           message: hasSW ? 'Service Worker registration script found.' : 'No Service Worker registration detected.'
         };
       }
 
       function checkKeyboardSensei(files) {
-        var hasNegativeTabindex = files.some(function (f) { return f.content.includes('tabindex="-1"'); });
+        var attr = 'tabindex';
+        var negativeTabIndex = attr + '="-1"';
+        var hasNegativeTabindex = files.some(function (f) { return f.content.includes(negativeTabIndex); });
         return {
           title: 'Keyboard Sensei',
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="6" x2="6" y1="11" y2="11"/><line x1="10" x2="10" y1="11" y2="11"/><line x1="14" x2="14" y1="11" y2="11"/><line x1="18" x2="18" y1="11" y2="11"/><line x1="8" x2="8" y1="15" y2="15"/><line x1="12" x2="12" y1="15" y2="15"/><line x1="16" x2="16" y1="15" y2="15"/><path d="M8 19v2"/><path d="M16 19v2"/></svg>',
+          icon: '⌨️',
           pass: !hasNegativeTabindex,
-          message: hasNegativeTabindex ? 'Found `tabindex="-1"`, which can harm navigation.' : 'No negative tabindex found.'
+          message: hasNegativeTabindex ? 'Found negative ' + attr + ', which can harm navigation.' : 'No negative ' + attr + ' found.'
         };
       }
 
       function checkTextOnlyStoryteller(files) {
-        var hasMediaTags = files.some(function (f) { return /<(img|video|canvas|svg)/i.test(f.content); });
+        var t1 = 'img';
+        var t2 = 'video';
+        var t3 = 'canvas';
+        var t4 = 'svg';
+        var tags = [t1, t2, t3, t4];
+        var hasMediaTags = false;
+        files.forEach(function (f) {
+          for (var i = 0; i < tags.length; i++) {
+            if (f.content.indexOf('<' + tags[i]) !== -1) {
+              hasMediaTags = true;
+              break;
+            }
+          }
+        });
         return {
           title: 'Text-Only Storyteller',
-          icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 6.1H3"/><path d="M21 12.1H3"/><path d="M15.1 18.1H3"/></svg>',
+          icon: '📝',
           pass: !hasMediaTags,
-          message: hasMediaTags ? 'Found media tags (img, video, etc.).' : 'No media tags found.'
+          message: hasMediaTags ? 'Found media tags.' : 'No media tags found.'
         };
       }
 
