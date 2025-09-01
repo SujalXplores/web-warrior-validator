@@ -75,7 +75,7 @@
       border: 1px solid var(--border-color);
       border-radius: 12px;
       padding: 32px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 20px #00000033;
     }
 
     .card h2 {
@@ -100,7 +100,7 @@
     #drop-zone.drag-over {
       border-style: solid;
       border-color: var(--accent-color);
-      background-color: rgba(74, 128, 240, 0.1);
+      background-color: #4a80f01a;
     }
 
     #file-input {
@@ -135,6 +135,76 @@
       font-size: 0.9rem;
     }
 
+    .input-group {
+      margin-bottom: 24px;
+    }
+
+    .input-group label {
+      display: block;
+      color: var(--primary-text-color);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .input-group input[type="url"] {
+      width: 100%;
+      padding: 12px 16px;
+      background-color: var(--card-background);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--primary-text-color);
+      font-family: var(--font-family);
+      font-size: 1rem;
+    }
+
+    .input-group input[type="url"]:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px #4a80f033;
+    }
+
+    .input-group input[type="url"]::placeholder {
+      color: var(--secondary-text-color);
+    }
+
+    .section-divider {
+      text-align: center;
+      margin: 32px 0;
+      position: relative;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .section-divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: var(--border-color);
+      z-index: 1;
+    }
+
+    .section-divider span {
+      background-color: var(--card-background);
+      color: var(--secondary-text-color);
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      position: relative;
+      z-index: 2;
+      border-radius: 4px;
+    }
+
+    .github-help {
+      font-size: 0.9rem;
+      color: var(--secondary-text-color);
+      margin-top: 8px;
+    }
+
     .btn {
       display: flex;
       align-items: center;
@@ -150,7 +220,7 @@
       font-weight: 500;
       cursor: pointer;
       margin-top: 24px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 15px #00000033;
     }
 
     .btn:disabled {
@@ -272,8 +342,27 @@
   <main class="container">
     <section id="uploader-card" class="card">
       <h2>
-        ⬆️ 1. Upload Project
+        ⬇️ 1. Import Project
       </h2>
+
+      <div class="input-group">
+        <label for="github-url">GitHub Repository URL</label>
+        <input type="url" id="github-url" placeholder="https://github.com/username/repository"
+          aria-describedby="github-help">
+        <p id="github-help" class="github-help">
+          Enter a GitHub repository URL to fetch and validate the project
+        </p>
+      </div>
+
+      <button id="fetch-btn" class="btn" disabled>
+        <span class="btn-text">Fetch from GitHub</span>
+        <div class="spinner"></div>
+      </button>
+
+      <div class="section-divider">
+        <span>OR</span>
+      </div>
+
       <div id="drop-zone">
         <p>Drag & drop project file(s) here, or click to browse</p>
         <input type="file" id="file-input" multiple webkitdirectory directory>
@@ -310,11 +399,148 @@
       var dropZone = document.getElementById('drop-zone');
       var fileInput = document.getElementById('file-input');
       var fileList = document.getElementById('file-list');
+      var githubUrl = document.getElementById('github-url');
+      var fetchBtn = document.getElementById('fetch-btn');
       var validateBtn = document.getElementById('validate-btn');
       var resultsContainer = document.getElementById('results-container');
       var resultsList = document.getElementById('results-list');
 
       var filesStore = [];
+
+      githubUrl.addEventListener('input', function () {
+        var url = githubUrl.value.trim();
+        fetchBtn.disabled = !isValidGitHubUrl(url);
+      });
+
+      fetchBtn.addEventListener('click', function () {
+        var url = githubUrl.value.trim();
+        if (!isValidGitHubUrl(url)) return;
+
+        fetchBtn.classList.add('loading');
+        fetchBtn.disabled = true;
+        filesStore = [];
+        updateFileList();
+        validateBtn.disabled = true;
+        resultsContainer.style.display = 'none';
+
+        fetchGitHubProject(url, function (error, files) {
+          if (error) {
+            alert('Error fetching GitHub project: ' + error);
+            fetchBtn.classList.remove('loading');
+            fetchBtn.disabled = false;
+            return;
+          }
+
+          filesStore = files;
+          updateFileList();
+          validateBtn.disabled = false;
+          fetchBtn.classList.remove('loading');
+          fetchBtn.disabled = false;
+        });
+      });
+
+      function isValidGitHubUrl(url) {
+        return /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/?$/.test(url);
+      }
+
+      function fetchGitHubProject(url, callback) {
+        var parts = url.replace('https://github.com/', '').replace(/\/$/, '').split('/');
+        var owner = parts[0];
+        var repo = parts[1];
+        var apiUrl = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents';
+
+        fetchDirectoryContents(apiUrl, '', callback);
+      }
+
+      function fetchDirectoryContents(apiUrl, basePath, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', apiUrl);
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            try {
+              var contents = JSON.parse(xhr.responseText);
+              var files = [];
+              var pendingRequests = 0;
+              var completed = 0;
+              var hasError = false;
+
+              contents.forEach(function (item) {
+                var relativePath = basePath ? basePath + '/' + item.name : item.name;
+
+                if (item.name.indexOf('.') === 0) return;
+
+                pendingRequests++;
+
+                if (item.type === 'file') {
+                  fetchFileContent(item.download_url, relativePath, function (error, fileData) {
+                    if (hasError) return;
+                    if (error) {
+                      hasError = true;
+                      callback(error);
+                      return;
+                    }
+                    files.push(fileData);
+                    completed++;
+                    if (completed === pendingRequests) {
+                      callback(null, files);
+                    }
+                  });
+                } else if (item.type === 'dir') {
+                  fetchDirectoryContents(item.url, relativePath, function (error, dirFiles) {
+                    if (hasError) return;
+                    if (error) {
+                      hasError = true;
+                      callback(error);
+                      return;
+                    }
+                    files = files.concat(dirFiles);
+                    completed++;
+                    if (completed === pendingRequests) {
+                      callback(null, files);
+                    }
+                  });
+                }
+              });
+
+              if (pendingRequests === 0) {
+                callback(null, files);
+              }
+            } catch (e) {
+              callback('Failed to parse repository response');
+            }
+          } else {
+            callback('Failed to fetch repository contents');
+          }
+        };
+        xhr.onerror = function () {
+          callback('Network error while fetching repository');
+        };
+        xhr.send();
+      }
+
+      function fetchFileContent(downloadUrl, relativePath, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', downloadUrl);
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            var blob = new Blob([xhr.responseText], { type: 'text/plain' });
+            Object.defineProperty(blob, 'name', { value: relativePath.split('/').pop() });
+            Object.defineProperty(blob, 'webkitRelativePath', { value: relativePath });
+            Object.defineProperty(blob, 'size', { value: xhr.responseText.length });
+
+            callback(null, {
+              file: blob,
+              content: xhr.responseText
+            });
+          } else {
+            callback('Failed to fetch file: ' + relativePath);
+          }
+        };
+        xhr.onerror = function () {
+          callback('Network error while fetching file: ' + relativePath);
+        };
+        xhr.send();
+      }
 
       dropZone.addEventListener('click', function () { fileInput.click(); });
       dropZone.addEventListener('dragover', function (e) {
