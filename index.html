@@ -323,6 +323,33 @@
       padding-left: 40px;
     }
 
+    .skip-link {
+      position: absolute;
+      top: -50px;
+      left: 6px;
+      background: var(--accent-color);
+      color: var(--primary-text-color);
+      padding: 8px;
+      text-decoration: none;
+      border-radius: 4px;
+      z-index: 1000;
+    }
+
+    .skip-link:focus {
+      top: 6px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
     footer {
       text-align: center;
       padding: 60px 20px 20px;
@@ -333,13 +360,15 @@
 </head>
 
 <body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <div id="status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
   <header class="container">
     <h1>Web Warrior's Validator</h1>
     <p>A Monolith Master tool for the "Battle Against Bloat" Hackathon.</p>
   </header>
 
-  <main class="container">
+  <main id="main" class="container">
     <section id="uploader-card" class="card">
       <h2>
         ⬇️ 1. Import Project
@@ -354,20 +383,21 @@
         </p>
       </div>
 
-      <button id="fetch-btn" class="btn" disabled>
+      <button id="fetch-btn" class="btn" disabled aria-describedby="github-help">
         <span class="btn-text">Fetch from GitHub</span>
-        <div class="spinner"></div>
+        <div class="spinner" aria-hidden="true"></div>
       </button>
 
       <div class="section-divider">
         <span>OR</span>
       </div>
 
-      <div id="drop-zone">
+      <div id="drop-zone" role="button" tabindex="0"
+        aria-label="Upload project files. Click to browse or drag and drop files here">
         <p>Drag & drop project file(s) here, or click to browse</p>
         <input type="file" id="file-input" multiple webkitdirectory directory>
       </div>
-      <ul id="file-list"></ul>
+      <ul id="file-list" aria-label="Uploaded files"></ul>
     </section>
 
     <section id="validation-card" class="card">
@@ -376,15 +406,15 @@
       </h2>
       <button id="validate-btn" class="btn" disabled>
         <span class="btn-text">Validate Project</span>
-        <div class="spinner"></div>
+        <div class="spinner" aria-hidden="true"></div>
       </button>
     </section>
 
-    <section id="results-container" class="card">
-      <h2>
+    <section id="results-container" class="card" aria-labelledby="results-heading">
+      <h2 id="results-heading" tabindex="-1">
         📊 3. Validation Report
       </h2>
-      <ul id="results-list"></ul>
+      <ul id="results-list" role="list"></ul>
     </section>
   </main>
 
@@ -404,8 +434,13 @@
       var validateBtn = document.getElementById('validate-btn');
       var resultsContainer = document.getElementById('results-container');
       var resultsList = document.getElementById('results-list');
+      var status = document.getElementById('status');
 
       var filesStore = [];
+
+      function announceStatus(message) {
+        status.textContent = message;
+      }
 
       githubUrl.addEventListener('input', function () {
         var url = githubUrl.value.trim();
@@ -418,6 +453,8 @@
 
         fetchBtn.classList.add('loading');
         fetchBtn.disabled = true;
+        fetchBtn.setAttribute('aria-describedby', 'github-help');
+        announceStatus('Fetching GitHub project, please wait');
         filesStore = [];
         updateFileList();
         validateBtn.disabled = true;
@@ -426,6 +463,7 @@
         fetchGitHubProject(url, function (error, files) {
           if (error) {
             alert('Error fetching GitHub project: ' + error);
+            announceStatus('Error fetching GitHub project');
             fetchBtn.classList.remove('loading');
             fetchBtn.disabled = false;
             return;
@@ -436,6 +474,7 @@
           validateBtn.disabled = false;
           fetchBtn.classList.remove('loading');
           fetchBtn.disabled = false;
+          announceStatus('GitHub project fetched successfully. ' + files.length + ' files loaded');
         });
       });
 
@@ -543,6 +582,12 @@
       }
 
       dropZone.addEventListener('click', function () { fileInput.click(); });
+      dropZone.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          fileInput.click();
+        }
+      });
       dropZone.addEventListener('dragover', function (e) {
         e.preventDefault();
         dropZone.classList.add('drag-over');
@@ -574,11 +619,13 @@
 
         if (filesStore.length === 0) {
           validateBtn.disabled = true;
+          announceStatus('No valid files found');
           return;
         }
 
         updateFileList();
         validateBtn.disabled = false;
+        announceStatus(filesStore.length + ' files uploaded successfully');
 
         var filesRead = 0;
         filesStore.forEach(function (fileWrapper) {
@@ -606,6 +653,8 @@
 
       validateBtn.addEventListener('click', function () {
         validateBtn.classList.add('loading');
+        validateBtn.setAttribute('aria-describedby', 'status');
+        announceStatus('Running validation, please wait');
         resultsContainer.style.display = 'none';
         resultsList.innerHTML = '';
         validateBtn.disabled = true;
@@ -614,8 +663,14 @@
           var results = runAllValidators();
           renderResults(results);
           validateBtn.classList.remove('loading');
+          validateBtn.removeAttribute('aria-describedby');
           resultsContainer.style.display = 'block';
           validateBtn.disabled = false;
+
+          var passCount = results.filter(function (r) { return r.pass; }).length;
+          announceStatus('Validation complete. ' + passCount + ' of ' + results.length + ' tests passed');
+
+          document.getElementById('results-heading').focus();
         }, 1500);
       });
 
@@ -784,7 +839,8 @@
         results.forEach(function (result) {
           var li = document.createElement('li');
           li.className = 'result-item ' + (result.pass ? 'pass' : 'fail');
-          li.innerHTML = '<div><div class="result-header"><div class="result-icon">' + result.icon + '</div><div class="result-title">' + result.title + '</div><div class="result-status">' + (result.pass ? 'PASS' : 'FAIL') + '</div></div><p class="result-details">' + result.message + '</p></div>';
+          li.setAttribute('role', 'listitem');
+          li.innerHTML = '<div><div class="result-header"><div class="result-icon" aria-hidden="true">' + result.icon + '</div><div class="result-title">' + result.title + '</div><div class="result-status" aria-label="' + (result.pass ? 'Passed' : 'Failed') + '">' + (result.pass ? 'PASS' : 'FAIL') + '</div></div><p class="result-details">' + result.message + '</p></div>';
           resultsList.appendChild(li);
         });
       }
