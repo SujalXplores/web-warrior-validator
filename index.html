@@ -34,7 +34,9 @@
       color: var(--primary-text-color);
       font-family: var(--font-family);
       line-height: 1.6;
+      display: -ms-flexbox;
       display: flex;
+      -ms-flex-direction: column;
       flex-direction: column;
     }
 
@@ -43,29 +45,32 @@
       max-width: 800px;
       margin: 0 auto;
       padding: 20px;
+      -ms-flex-positive: 1;
       flex-grow: 1;
     }
 
     header {
-      text-align: center;
       padding: 40px 0;
+      text-align: center;
     }
 
     header h1 {
       color: var(--primary-text-color);
       font-size: 2.75rem;
-      letter-spacing: -1px;
       font-weight: 700;
+      letter-spacing: -1px;
     }
 
     header p {
-      font-size: 1.1rem;
       color: var(--secondary-text-color);
+      font-size: 1.1rem;
       margin-top: 8px;
     }
 
     main {
+      display: -ms-flexbox;
       display: flex;
+      -ms-flex-direction: column;
       flex-direction: column;
       gap: 32px;
     }
@@ -74,33 +79,35 @@
       background-color: var(--card-background);
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      padding: 32px;
       box-shadow: 0 4px 20px #00000033;
+      padding: 32px;
     }
 
     .card h2 {
-      color: var(--primary-text-color);
-      font-size: 1.5rem;
-      margin-bottom: 24px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 16px;
-      display: flex;
+      -ms-flex-align: center;
       align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--primary-text-color);
+      display: -ms-flexbox;
+      display: flex;
+      font-size: 1.5rem;
       gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
     }
 
     #drop-zone {
       border: 2px dashed var(--border-color);
       border-radius: 8px;
+      cursor: pointer;
       padding: 40px;
       text-align: center;
-      cursor: pointer;
     }
 
     #drop-zone.drag-over {
-      border-style: solid;
-      border-color: var(--accent-color);
       background-color: #4a80f01a;
+      border-color: var(--accent-color);
+      border-style: solid;
     }
 
     #file-input {
@@ -108,16 +115,16 @@
     }
 
     #file-list {
+      font-size: .95rem;
       list-style: none;
       margin-top: 24px;
       max-height: 160px;
       overflow-y: auto;
-      font-size: 0.95rem;
     }
 
     #file-list li {
-      padding: 8px 4px;
       border-bottom: 1px solid var(--border-color);
+      padding: 8px 4px;
     }
 
     #file-list li:last-child {
@@ -125,14 +132,17 @@
     }
 
     .file-info {
-      display: flex;
-      justify-content: space-between;
+      -ms-flex-align: center;
       align-items: center;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-pack: justify;
+      justify-content: space-between;
     }
 
     .file-size {
       color: var(--secondary-text-color);
-      font-size: 0.9rem;
+      font-size: .9rem;
     }
 
     .input-group {
@@ -140,27 +150,27 @@
     }
 
     .input-group label {
-      display: block;
       color: var(--primary-text-color);
+      display: block;
       font-weight: 500;
       margin-bottom: 8px;
     }
 
     .input-group input[type="url"] {
-      width: 100%;
-      padding: 12px 16px;
       background-color: var(--card-background);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       color: var(--primary-text-color);
       font-family: var(--font-family);
       font-size: 1rem;
+      padding: 12px 16px;
+      width: 100%;
     }
 
     .input-group input[type="url"]:focus {
-      outline: none;
       border-color: var(--accent-color);
       box-shadow: 0 0 0 2px #4a80f033;
+      outline: none;
     }
 
     .input-group input[type="url"]::placeholder {
@@ -168,76 +178,82 @@
     }
 
     .section-divider {
-      text-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      display: -ms-flexbox;
+      display: flex;
+      height: 20px;
+      -ms-flex-pack: center;
+      justify-content: center;
       margin: 32px 0;
       position: relative;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      text-align: center;
     }
 
     .section-divider::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 1px;
       background-color: var(--border-color);
+      content: '';
+      height: 1px;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 50%;
       z-index: 1;
     }
 
     .section-divider span {
       background-color: var(--card-background);
+      border-radius: 4px;
       color: var(--secondary-text-color);
-      padding: 8px 16px;
-      font-size: 0.9rem;
+      font-size: .9rem;
       font-weight: 500;
+      padding: 8px 16px;
       position: relative;
       z-index: 2;
-      border-radius: 4px;
     }
 
     .github-help {
-      font-size: 0.9rem;
       color: var(--secondary-text-color);
+      font-size: .9rem;
       margin-top: 8px;
     }
 
     .btn {
-      display: flex;
+      -ms-flex-align: center;
       align-items: center;
-      justify-content: center;
-      width: 100%;
-      padding: 16px;
       background: var(--accent-color);
-      color: var(--primary-text-color);
       border: 0;
       border-radius: 8px;
+      box-shadow: 0 4px 15px #00000033;
+      color: var(--primary-text-color);
+      cursor: pointer;
+      display: -ms-flexbox;
+      display: flex;
       font-family: var(--font-family);
       font-size: 1.1rem;
       font-weight: 500;
-      cursor: pointer;
+      -ms-flex-pack: center;
+      justify-content: center;
       margin-top: 24px;
-      box-shadow: 0 4px 15px #00000033;
+      padding: 16px;
+      width: 100%;
     }
 
     .btn:disabled {
       background: #333D52;
-      cursor: not-allowed;
-      opacity: 0.5;
       box-shadow: none;
+      cursor: not-allowed;
+      opacity: .5;
     }
 
     .btn .spinner {
-      display: none;
-      width: 20px;
-      height: 20px;
-      border: 2px solid #ffffff4d;
-      border-top-color: #fff;
-      border-radius: 50%;
       animation: spin 1s linear infinite;
+      border: 2px solid #ffffff4d;
+      border-radius: 50%;
+      border-top-color: #fff;
+      display: none;
+      height: 20px;
+      width: 20px;
     }
 
     @keyframes spin {
@@ -270,8 +286,8 @@
       background-color: var(--card-background);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 20px;
       margin-bottom: 12px;
+      padding: 20px;
     }
 
     .result-item.pass {
@@ -285,27 +301,30 @@
     }
 
     .result-header {
-      display: flex;
+      -ms-flex-align: center;
       align-items: center;
+      display: -ms-flexbox;
+      display: flex;
       gap: 16px;
     }
 
     .result-icon {
-      width: 24px;
       height: 24px;
+      width: 24px;
     }
 
     .result-title {
-      font-weight: 500;
-      font-size: 1.1rem;
+      -ms-flex-positive: 1;
       flex-grow: 1;
+      font-size: 1.1rem;
+      font-weight: 500;
     }
 
     .result-status {
+      font-size: .9rem;
       font-weight: 700;
-      font-size: 0.9rem;
+      letter-spacing: .5px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
 
     .result-item.pass .result-status {
@@ -317,21 +336,21 @@
     }
 
     .result-details {
-      font-size: 0.95rem;
       color: var(--secondary-text-color);
+      font-size: .95rem;
       margin-top: 8px;
       padding-left: 40px;
     }
 
     .skip-link {
-      position: absolute;
-      top: -50px;
-      left: 6px;
       background: var(--accent-color);
-      color: var(--primary-text-color);
-      padding: 8px;
-      text-decoration: none;
       border-radius: 4px;
+      color: var(--primary-text-color);
+      left: 6px;
+      padding: 8px;
+      position: absolute;
+      text-decoration: none;
+      top: -50px;
       z-index: 1000;
     }
 
@@ -340,21 +359,21 @@
     }
 
     .sr-only {
-      position: absolute;
-      width: 1px;
+      border: 0;
+      clip: rect(0, 0, 0, 0);
       height: 1px;
-      padding: 0;
       margin: -1px;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      padding: 0;
+      position: absolute;
+      width: 1px;
     }
 
     footer {
-      text-align: center;
-      padding: 60px 20px 20px;
       color: var(--secondary-text-color);
-      font-size: 0.9rem;
+      font-size: .9rem;
+      padding: 60px 20px 20px;
+      text-align: center;
     }
   </style>
 </head>
@@ -370,124 +389,83 @@
 
   <main id="main" class="container">
     <section id="uploader-card" class="card">
-      <h2>
-        ⬇️ 1. Import Project
-      </h2>
-
+      <h2>⬇️ Import Project</h2>
       <div class="input-group">
         <label for="github-url">GitHub Repository URL</label>
         <input type="url" id="github-url" placeholder="https://github.com/username/repository"
-          aria-describedby="github-help">
-        <p id="github-help" class="github-help">
-          Enter a GitHub repository URL to fetch and validate the project
-        </p>
+          aria-describedby="github-help" />
+        <p id="github-help" class="github-help">Enter a GitHub repository URL to fetch and validate the project</p>
       </div>
-
       <button id="fetch-btn" class="btn" disabled aria-describedby="github-help">
         <span class="btn-text">Fetch from GitHub</span>
         <div class="spinner" aria-hidden="true"></div>
       </button>
-
-      <div class="section-divider">
-        <span>OR</span>
-      </div>
-
+      <div class="section-divider"><span>OR</span></div>
       <div id="drop-zone" role="button" tabindex="0"
         aria-label="Upload project files. Click to browse or drag and drop files here">
         <p>Drag & drop project file(s) here, or click to browse</p>
-        <input type="file" id="file-input" multiple webkitdirectory directory>
+        <input type="file" id="file-input" multiple webkitdirectory directory />
       </div>
       <ul id="file-list" aria-label="Uploaded files"></ul>
     </section>
-
-    <section id="validation-card" class="card">
-      <h2>
-        ✅ 2. Run Validation
-      </h2>
-      <button id="validate-btn" class="btn" disabled>
-        <span class="btn-text">Validate Project</span>
-        <div class="spinner" aria-hidden="true"></div>
-      </button>
-    </section>
-
     <section id="results-container" class="card" aria-labelledby="results-heading">
-      <h2 id="results-heading" tabindex="-1">
-        📊 3. Validation Report
-      </h2>
+      <h2 id="results-heading" tabindex="-1">📊 Validation Report</h2>
       <ul id="results-list" role="list"></ul>
     </section>
   </main>
 
   <footer>
-    <div class="container">
-      <p>Crafted with 100% Vanilla JS.</p>
-    </div>
+    Crafted with ❤️ by Sujal Shah.
   </footer>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      var dropZone = document.getElementById('drop-zone');
-      var fileInput = document.getElementById('file-input');
-      var fileList = document.getElementById('file-list');
-      var githubUrl = document.getElementById('github-url');
-      var fetchBtn = document.getElementById('fetch-btn');
-      var validateBtn = document.getElementById('validate-btn');
-      var resultsContainer = document.getElementById('results-container');
-      var resultsList = document.getElementById('results-list');
-      var status = document.getElementById('status');
-
+      var dropZoneEl = document.getElementById('drop-zone');
+      var fileInputEl = document.getElementById('file-input');
+      var fileListEl = document.getElementById('file-list');
+      var githubUrlEl = document.getElementById('github-url');
+      var fetchBtnEl = document.getElementById('fetch-btn');
+      var resultsContainerEl = document.getElementById('results-container');
+      var resultsListEl = document.getElementById('results-list');
+      var statusEl = document.getElementById('status');
       var filesStore = [];
 
       function announceStatus(message) {
-        status.textContent = message;
+        statusEl.textContent = message;
       }
-
-      githubUrl.addEventListener('input', function () {
-        var url = githubUrl.value.trim();
-        fetchBtn.disabled = !isValidGitHubUrl(url);
+      githubUrlEl.addEventListener('input', function () {
+        fetchBtnEl.disabled = !/^https:\/\/github\.com\/[^\/]+\/[^\/]+\/?$/.test(githubUrlEl.value.trim());
       });
-
-      fetchBtn.addEventListener('click', function () {
-        var url = githubUrl.value.trim();
-        if (!isValidGitHubUrl(url)) return;
-
-        fetchBtn.classList.add('loading');
-        fetchBtn.disabled = true;
-        fetchBtn.setAttribute('aria-describedby', 'github-help');
+      fetchBtnEl.addEventListener('click', function () {
+        var url = githubUrlEl.value.trim();
+        if (!/^https:\/\/github\.com\/[^\/]+\/[^\/]+\/?$/.test(url)) return;
+        fetchBtnEl.classList.add('loading');
+        fetchBtnEl.disabled = true;
+        fetchBtnEl.setAttribute('aria-describedby', 'github-help');
         announceStatus('Fetching GitHub project, please wait');
         filesStore = [];
         updateFileList();
-        validateBtn.disabled = true;
-        resultsContainer.style.display = 'none';
-
+        resultsContainerEl.style.display = 'none';
         fetchGitHubProject(url, function (error, files) {
           if (error) {
             alert('Error fetching GitHub project: ' + error);
             announceStatus('Error fetching GitHub project');
-            fetchBtn.classList.remove('loading');
-            fetchBtn.disabled = false;
+            fetchBtnEl.classList.remove('loading');
+            fetchBtnEl.disabled = false;
             return;
           }
-
           filesStore = files;
           updateFileList();
-          validateBtn.disabled = false;
-          fetchBtn.classList.remove('loading');
-          fetchBtn.disabled = false;
+          fetchBtnEl.classList.remove('loading');
+          fetchBtnEl.disabled = false;
           announceStatus('GitHub project fetched successfully. ' + files.length + ' files loaded');
+          triggerValidation();
         });
       });
 
-      function isValidGitHubUrl(url) {
-        return /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/?$/.test(url);
-      }
-
       function fetchGitHubProject(url, callback) {
         var parts = url.replace('https://github.com/', '').replace(/\/$/, '').split('/');
-        var owner = parts[0];
-        var repo = parts[1];
-        var apiUrl = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents';
-
+        var apiUrl = 'https://api.github.com/repos/' + parts[0] + '/' + parts[1] + '/contents';
         fetchDirectoryContents(apiUrl, '', callback);
       }
 
@@ -502,14 +480,10 @@
               var pendingRequests = 0;
               var completed = 0;
               var hasError = false;
-
               contents.forEach(function (item) {
                 var relativePath = basePath ? basePath + '/' + item.name : item.name;
-
                 if (item.name.indexOf('.') === 0) return;
-
                 pendingRequests++;
-
                 if (item.type === 'file') {
                   fetchFileContent(item.download_url, relativePath, function (error, fileData) {
                     if (hasError) return;
@@ -540,7 +514,6 @@
                   });
                 }
               });
-
               if (pendingRequests === 0) {
                 callback(null, files);
               }
@@ -562,11 +535,18 @@
         xhr.open('GET', downloadUrl);
         xhr.onload = function () {
           if (xhr.status === 200) {
-            var blob = new Blob([xhr.responseText], { type: 'text/plain' });
-            Object.defineProperty(blob, 'name', { value: relativePath.split('/').pop() });
-            Object.defineProperty(blob, 'webkitRelativePath', { value: relativePath });
-            Object.defineProperty(blob, 'size', { value: xhr.responseText.length });
-
+            var blob = new Blob([xhr.responseText], {
+              type: 'text/plain'
+            });
+            Object.defineProperty(blob, 'name', {
+              value: relativePath.split('/').pop()
+            });
+            Object.defineProperty(blob, 'webkitRelativePath', {
+              value: relativePath
+            });
+            Object.defineProperty(blob, 'size', {
+              value: xhr.responseText.length
+            });
             callback(null, {
               file: blob,
               content: xhr.responseText
@@ -580,140 +560,130 @@
         };
         xhr.send();
       }
-
-      dropZone.addEventListener('click', function () { fileInput.click(); });
-      dropZone.addEventListener('keydown', function (e) {
+      dropZoneEl.addEventListener('click', function () {
+        fileInputEl.click();
+      });
+      dropZoneEl.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          fileInput.click();
+          fileInputEl.click();
         }
       });
-      dropZone.addEventListener('dragover', function (e) {
+      dropZoneEl.addEventListener('dragover', function (e) {
         e.preventDefault();
-        dropZone.classList.add('drag-over');
+        dropZoneEl.classList.add('drag-over');
       });
-      dropZone.addEventListener('dragleave', function () { dropZone.classList.remove('drag-over'); });
-      dropZone.addEventListener('drop', function (e) {
+      dropZoneEl.addEventListener('dragleave', function () {
+        dropZoneEl.classList.remove('drag-over');
+      });
+      dropZoneEl.addEventListener('drop', function (e) {
         e.preventDefault();
-        dropZone.classList.remove('drag-over');
+        dropZoneEl.classList.remove('drag-over');
         handleFiles(e.dataTransfer.files);
       });
-      fileInput.addEventListener('change', function (e) { handleFiles(e.target.files); });
+      fileInputEl.addEventListener('change', function (e) {
+        handleFiles(e.target.files);
+      });
 
       function handleFiles(files) {
-        filesStore = Array.from(files)
-          .filter(function (file) {
-            var path = file.webkitRelativePath || file.name;
-            var pathParts = path.split('/');
-
-            for (var i = 0; i < pathParts.length; i++) {
-              if (pathParts[i].indexOf('.') === 0 && pathParts[i] !== '.' && pathParts[i] !== '..') {
-                return false;
-              }
+        var fileArray = [];
+        for (var i = 0; i < files.length; i++) {
+          fileArray.push(files[i]);
+        }
+        filesStore = fileArray.filter(function (file) {
+          var path = file.webkitRelativePath || file.name;
+          var pathParts = path.split('/');
+          for (var i = 0; i < pathParts.length; i++) {
+            if (pathParts[i].indexOf('.') === 0 && pathParts[i] !== '.' && pathParts[i] !== '..') {
+              return false;
             }
-            return true;
-          })
-          .map(function (file) {
-            return { file: file, content: '' };
-          });
-
+          }
+          return true;
+        }).map(function (file) {
+          return {
+            file: file,
+            content: ''
+          };
+        });
         if (filesStore.length === 0) {
-          validateBtn.disabled = true;
           announceStatus('No valid files found');
           return;
         }
-
         updateFileList();
-        validateBtn.disabled = false;
         announceStatus(filesStore.length + ' files uploaded successfully');
-
-        var filesRead = 0;
+        triggerValidation();
         filesStore.forEach(function (fileWrapper) {
           var reader = new FileReader();
           reader.onload = function (e) {
             fileWrapper.content = e.target.result;
-            filesRead++;
           };
           reader.onerror = function () {
             fileWrapper.content = 'Error reading file.';
-            filesRead++;
           };
           reader.readAsText(fileWrapper.file);
         });
       }
 
       function updateFileList() {
-        fileList.innerHTML = '';
+        fileListEl.innerHTML = '';
         filesStore.forEach(function (fileWrapper) {
           var li = document.createElement('li');
           li.innerHTML = '<div class="file-info"><span>' + (fileWrapper.file.webkitRelativePath || fileWrapper.file.name) + '</span><span class="file-size">' + (fileWrapper.file.size / 1024).toFixed(2) + ' KB</span></div>';
-          fileList.appendChild(li);
+          fileListEl.appendChild(li);
         });
       }
 
-      validateBtn.addEventListener('click', function () {
-        validateBtn.classList.add('loading');
-        validateBtn.setAttribute('aria-describedby', 'status');
+      function triggerValidation() {
         announceStatus('Running validation, please wait');
-        resultsContainer.style.display = 'none';
-        resultsList.innerHTML = '';
-        validateBtn.disabled = true;
-
+        resultsContainerEl.style.display = 'none';
+        resultsListEl.innerHTML = '';
         setTimeout(function () {
           var results = runAllValidators();
           renderResults(results);
-          validateBtn.classList.remove('loading');
-          validateBtn.removeAttribute('aria-describedby');
-          resultsContainer.style.display = 'block';
-          validateBtn.disabled = false;
-
-          var passCount = results.filter(function (r) { return r.pass; }).length;
+          resultsContainerEl.style.display = 'block';
+          var passCount = results.filter(function (r) {
+            return r.pass;
+          }).length;
           announceStatus('Validation complete. ' + passCount + ' of ' + results.length + ' tests passed');
-
           document.getElementById('results-heading').focus();
         }, 1500);
-      });
+      }
 
       function runAllValidators() {
-        return [
-          checkByteAssassin(filesStore),
-          checkMonolithMaster(filesStore),
-          checkNoScriptSorcerer(filesStore),
-          checkSingleRequestSamurai(filesStore),
-          checkLegacyBrowser(filesStore),
-          checkAccessibility(filesStore),
-          checkOfflineSurvivalist(filesStore),
-          checkKeyboardSensei(filesStore),
-          checkTextOnlyStoryteller(filesStore),
-        ];
+        return [checkByteAssassin(filesStore), checkMonolithMaster(filesStore), checkNoScriptSorcerer(filesStore), checkSingleRequestSamurai(filesStore), checkLegacyBrowser(filesStore), checkAccessibility(filesStore), checkOfflineSurvivalist(filesStore), checkKeyboardSensei(filesStore), checkTextOnlyStoryteller(filesStore),];
       }
 
       function checkByteAssassin(files) {
-        var totalSize = files.reduce(function (acc, f) { return acc + f.file.size; }, 0);
-        var pass = totalSize <= 1024 && totalSize > 0;
+        var totalSize = files.reduce(function (acc, f) {
+          return acc + f.file.size;
+        }, 0);
         return {
           title: 'Byte Assassin',
           icon: '🗡️',
-          pass: pass,
+          pass: totalSize <= 1024 && totalSize > 0,
           message: 'Total project size is ' + totalSize + ' bytes. (Max: 1024 bytes)'
         };
       }
+
       function checkMonolithMaster(files) {
         var filteredFiles = files.filter(function (f) {
           return !f.file.name.toLowerCase().endsWith('.md');
         });
-        var htmlFiles = filteredFiles.filter(function (f) { return f.file.name.endsWith('.html'); });
-        var pass = filteredFiles.length === 1 && htmlFiles.length === 1;
+        var htmlFiles = filteredFiles.filter(function (f) {
+          return f.file.name.endsWith('.html');
+        });
         return {
           title: 'Monolith Master',
           icon: '🏛️',
-          pass: pass,
+          pass: filteredFiles.length === 1 && htmlFiles.length === 1,
           message: 'Project contains ' + filteredFiles.length + ' file(s) (excluding .md files). A true monolith is a single HTML file.'
         };
       }
 
       function checkNoScriptSorcerer(files) {
-        var hasScriptTag = files.some(function (f) { return f.file.name.endsWith('.html') && /<script/i.test(f.content); });
+        var hasScriptTag = files.some(function (f) {
+          return f.file.name.endsWith('.html') && /<script/i.test(f.content);
+        });
         return {
           title: 'No-Script Sorcerer',
           icon: '🚫',
@@ -723,13 +693,15 @@
       }
 
       function checkSingleRequestSamurai(files) {
-        var i1 = 'i';
-        var i2 = 'm';
-        var i3 = 'g';
-        var imgTag = i1 + i2 + i3;
-        var externalPattern = '<(?:link|script|' + imgTag + '|source)[^>]+(href|src)="https?:\/\/';
-        var externalRegex = new RegExp(externalPattern, 'i');
-        var hasExternalRequest = files.some(function (f) { return f.file.name.endsWith('.html') && externalRegex.test(f.content); });
+        var i1 = 'i',
+          i2 = 'm',
+          i3 = 'g',
+          imgTag = i1 + i2 + i3,
+          externalPattern = '<(?:link|script|' + imgTag + '|source)[^>]+(href|src)="https?:\/\/',
+          externalRegex = new RegExp(externalPattern, 'i'),
+          hasExternalRequest = files.some(function (f) {
+            return f.file.name.endsWith('.html') && externalRegex.test(f.content);
+          });
         return {
           title: 'Single-Request Samurai',
           icon: '⚔️',
@@ -739,18 +711,27 @@
       }
 
       function checkLegacyBrowser(files) {
-        var c = 'c', o = 'o', n = 'n', s = 's', t = 't';
-        var l = 'l', e = 'e';
-        var p = 'P', r = 'r', m = 'm', i = 'i';
-        var a = 'a', y = 'y', w = 'w';
-
-        var k1 = c + o + n + s + t;
-        var k2 = l + e + t;
-        var k3 = p + r + o + m + i + s + e;
-        var k4 = a + s + y + n + c;
-        var k5 = a + w + a + i + t;
-        var modernKeywords = [k1 + ' ', k2 + ' ', k3, k4 + ' ', k5 + ' '];
-        var hasModernJs = false;
+        var c = 'c',
+          o = 'o',
+          n = 'n',
+          s = 's',
+          t = 't',
+          l = 'l',
+          e = 'e',
+          p = 'P',
+          r = 'r',
+          m = 'm',
+          i = 'i',
+          a = 'a',
+          y = 'y',
+          w = 'w',
+          k1 = c + o + n + s + t,
+          k2 = l + e + t,
+          k3 = p + r + o + m + i + s + e,
+          k4 = a + s + y + n + c,
+          k5 = a + w + a + i + t,
+          modernKeywords = [k1 + ' ', k2 + ' ', k3, k4 + ' ', k5 + ' '],
+          hasModernJs = false;
         files.forEach(function (f) {
           if (f.file.name.endsWith('.js') || f.file.name.endsWith('.html')) {
             for (var i = 0; i < modernKeywords.length; i++) {
@@ -774,11 +755,11 @@
         files.forEach(function (f) {
           if (f.file.name.endsWith('.html')) {
             if (!/<html[^>]+lang=/i.test(f.content)) issues.push('Missing lang attribute on html tag.');
-            var i1 = 'i';
-            var i2 = 'm';
-            var i3 = 'g';
-            var imgTag = i1 + i2 + i3;
-            var imgPattern = new RegExp('<' + imgTag + '((?!alt=).)*?>', 'i');
+            var i1 = 'i',
+              i2 = 'm',
+              i3 = 'g',
+              imgTag = i1 + i2 + i3,
+              imgPattern = new RegExp('<' + imgTag + '((?!alt=).)*?>', 'i');
             if (imgPattern.test(f.content)) issues.push('Found ' + imgTag + ' tag missing an alt attribute.');
           }
         });
@@ -791,7 +772,9 @@
       }
 
       function checkOfflineSurvivalist(files) {
-        var hasSW = files.some(function (f) { return f.content.includes('serviceWorker') && f.content.includes('register'); });
+        var hasSW = files.some(function (f) {
+          return f.content.includes('serviceWorker') && f.content.includes('register');
+        });
         return {
           title: 'Offline Survivalist',
           icon: '🏝️',
@@ -801,9 +784,11 @@
       }
 
       function checkKeyboardSensei(files) {
-        var attr = 'tabindex';
-        var negativeTabIndex = attr + '="-1"';
-        var hasNegativeTabindex = files.some(function (f) { return f.content.includes(negativeTabIndex); });
+        var attr = 'tabindex',
+          negativeTabIndex = attr + '="-1"',
+          hasNegativeTabindex = files.some(function (f) {
+            return f.content.includes(negativeTabIndex);
+          });
         return {
           title: 'Keyboard Sensei',
           icon: '⌨️',
@@ -813,12 +798,12 @@
       }
 
       function checkTextOnlyStoryteller(files) {
-        var t1 = 'img';
-        var t2 = 'video';
-        var t3 = 'canvas';
-        var t4 = 'svg';
-        var tags = [t1, t2, t3, t4];
-        var hasMediaTags = false;
+        var t1 = 'img',
+          t2 = 'video',
+          t3 = 'canvas',
+          t4 = 'svg',
+          tags = [t1, t2, t3, t4],
+          hasMediaTags = false;
         files.forEach(function (f) {
           for (var i = 0; i < tags.length; i++) {
             if (f.content.indexOf('<' + tags[i]) !== -1) {
@@ -840,8 +825,8 @@
           var li = document.createElement('li');
           li.className = 'result-item ' + (result.pass ? 'pass' : 'fail');
           li.setAttribute('role', 'listitem');
-          li.innerHTML = '<div><div class="result-header"><div class="result-icon" aria-hidden="true">' + result.icon + '</div><div class="result-title">' + result.title + '</div><div class="result-status" aria-label="' + (result.pass ? 'Passed' : 'Failed') + '">' + (result.pass ? 'PASS' : 'FAIL') + '</div></div><p class="result-details">' + result.message + '</p></div>';
-          resultsList.appendChild(li);
+          li.innerHTML = '<div class="result-header"><div class="result-icon" aria-hidden="true">' + result.icon + '</div><div class="result-title">' + result.title + '</div><div class="result-status" aria-label="' + (result.pass ? 'Passed' : 'Failed') + '">' + (result.pass ? 'PASS' : 'FAIL') + '</div></div><p class="result-details">' + result.message + '</p>';
+          resultsListEl.appendChild(li);
         });
       }
     });
