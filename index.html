@@ -420,14 +420,15 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      var dropZoneEl = document.getElementById('drop-zone');
-      var fileInputEl = document.getElementById('file-input');
-      var fileListEl = document.getElementById('file-list');
-      var githubUrlEl = document.getElementById('github-url');
-      var fetchBtnEl = document.getElementById('fetch-btn');
-      var resultsContainerEl = document.getElementById('results-container');
-      var resultsListEl = document.getElementById('results-list');
-      var statusEl = document.getElementById('status');
+      var $ = function(id) { return document.getElementById(id); };
+      var dropZoneEl = $('drop-zone');
+      var fileInputEl = $('file-input');
+      var fileListEl = $('file-list');
+      var githubUrlEl = $('github-url');
+      var fetchBtnEl = $('fetch-btn');
+      var resultsContainerEl = $('results-container');
+      var resultsListEl = $('results-list');
+      var statusEl = $('status');
       var filesStore = [];
 
       function announceStatus(message) {
@@ -645,7 +646,7 @@
             return r.pass;
           }).length;
           announceStatus('Validation complete. ' + passCount + ' of ' + results.length + ' tests passed');
-          document.getElementById('results-heading').focus();
+          $('results-heading').focus();
         }, 1500);
       }
 
